@@ -1,17 +1,47 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"context"
+	"database/sql"
+	"os"
 
-	"github.com/KokoulinM/exchanges-history-app/internal/csv"
+	"github.com/rs/zerolog"
+
+	"github.com/KokoulinM/exchanges-history-app/internal/config"
+	"github.com/KokoulinM/exchanges-history-app/internal/database/postgres"
+	"github.com/KokoulinM/exchanges-history-app/internal/handlers"
+	"github.com/KokoulinM/exchanges-history-app/internal/router"
+	"github.com/KokoulinM/exchanges-history-app/internal/server"
 )
 
 func main() {
-	data, err := csv.Reader("history.csv")
+	logger := zerolog.New(os.Stdout).Level(zerolog.DebugLevel)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	cfg := config.New()
+
+	_, err := postgres.RunMigration(cfg.DataBaseURI)
 	if err != nil {
-		log.Fatal(err)
+		logger.Error().Msg(err.Error())
 	}
 
-	fmt.Println(len(data))
+	logger.Log().Msg("ServerAddress: " + cfg.ServerAddress)
+	logger.Log().Msg("BaseURL: " + cfg.BaseURL)
+	logger.Log().Msg("DataBase: " + cfg.DataBaseURI)
+
+	db, err := sql.Open("postgres", cfg.DataBaseURI)
+	if err != nil {
+		logger.Error().Msg(err.Error())
+	}
+
+	repo := postgres.New(db, &logger)
+
+	h := handlers.New(repo, cfg.BaseURL)
+	r := router.New(h)
+
+	s := server.New(cfg.ServerAddress, r)
+	defer s.Shutdown(ctx)
+
+	s.Start()
 }

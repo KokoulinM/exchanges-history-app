@@ -3,8 +3,8 @@ package csv
 
 import (
 	"encoding/csv"
+	"io"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 
@@ -73,15 +73,8 @@ func parser(data [][]string, filters ...func(eh models.ExchangesHistory) bool) (
 	return exchangesHistory, nil
 }
 
-func Reader(name string) ([]models.ExchangesHistory, error) {
-	f, err := os.Open(name)
-	if err != nil {
-		return nil, err
-	}
-
-	defer f.Close()
-
-	csvReader := csv.NewReader(f)
+func Reader(reader io.Reader) ([]models.ExchangesHistory, error) {
+	csvReader := csv.NewReader(reader)
 	data, err := csvReader.ReadAll()
 	if err != nil {
 		return nil, err
