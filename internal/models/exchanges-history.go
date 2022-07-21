@@ -1,3 +1,4 @@
+// Package models contains application structs
 package models
 
 type ExchangesHistory struct {
