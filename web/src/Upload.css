@@ -1,0 +1,11 @@
+.upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.avatar-uploader {
+    display: flex!important;
+    justify-content: center;
+}

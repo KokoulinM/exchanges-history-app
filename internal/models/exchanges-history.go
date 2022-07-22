@@ -2,12 +2,12 @@
 package models
 
 type ExchangesHistory struct {
-	Date           string
-	Cryptoamount   float64
-	Fiatamount     float64
-	Fee            float64
-	Cryptocurrency string
-	Paymethod      string
-	Type           string
-	Status         string
+	Date           string  `json:"date"`
+	Cryptoamount   float64 `json:"crypto_amount"`
+	Fiatamount     float64 `json:"fiat_amount"`
+	Fee            float64 `json:"fee"`
+	Cryptocurrency string  `json:"crypto_currency"`
+	Paymethod      string  `json:"pay_method"`
+	Type           string  `json:"type"`
+	Status         string  `json:"status"`
 }

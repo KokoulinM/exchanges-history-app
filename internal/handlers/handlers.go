@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 
@@ -14,6 +15,7 @@ import (
 type Repository interface {
 	Ping(ctx context.Context) error
 	UploadFile(ctx context.Context, exchangesHistory []models.ExchangesHistory) error
+	GetHistory(ctx context.Context) ([]models.ExchangesHistory, error)
 }
 
 type Handlers struct {
@@ -29,7 +31,7 @@ func New(repo Repository, baseURL string) *Handlers {
 	}
 }
 
-func (h *Handlers) UploadExchangesHistory(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) UploadHistory(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(10 << 20)
 
 	fileName := chi.URLParam(r, "file")
@@ -68,6 +70,29 @@ func (h *Handlers) UploadExchangesHistory(w http.ResponseWriter, r *http.Request
 
 	w.WriteHeader(http.StatusOK)
 	return
+}
+
+func (h *Handlers) GetHistory(w http.ResponseWriter, r *http.Request) {
+	exchangesHistory, err := h.repo.GetHistory(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	body, err := json.Marshal(exchangesHistory)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Add("Content-Type", "application/json; charset=utf-8")
+
+	w.WriteHeader(http.StatusOK)
+
+	_, err = w.Write(body)
+	if err == nil {
+		return
+	}
 }
 
 func (h *Handlers) PingDB(w http.ResponseWriter, r *http.Request) {

@@ -16,7 +16,8 @@ func New(h *handlers.Handlers) *chi.Mux {
 
 	router.Route("/api", func(r chi.Router) {
 		r.Route("/v1", func(r chi.Router) {
-			r.Post("/history/exchanges/{file}", h.UploadExchangesHistory)
+			r.Post("/history/exchanges/{file}", h.UploadHistory)
+			r.Get("/history/exchanges", h.GetHistory)
 			r.Get("/ping", h.PingDB)
 		})
 	})
