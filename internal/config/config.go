@@ -1,4 +1,4 @@
-// Package configs is global configuration for application operation.
+// Package config is global configuration for application operation.
 package config
 
 import (

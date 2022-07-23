@@ -1,3 +1,4 @@
+// Package handlers provide methods for working with the app
 package handlers
 
 import (
@@ -73,7 +74,6 @@ func (h *Handlers) UploadHistory(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	w.WriteHeader(http.StatusOK)
-	return
 }
 
 func (h *Handlers) GetHistory(w http.ResponseWriter, r *http.Request) {
