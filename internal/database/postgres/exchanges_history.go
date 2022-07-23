@@ -72,3 +72,64 @@ func (db *PostgresDatabase) GetHistory(ctx context.Context) ([]models.ExchangesH
 
 	return result, nil
 }
+
+func (db *PostgresDatabase) Calculate(ctx context.Context, from, to, payMethod, cryptoCurrency string) (models.ResponseCalculation, error) {
+	var result models.ResponseCalculation
+	query := "SELECT COALESCE(SUM(fiat_amount), 0), COALESCE(SUM(crypto_amount - fee), 0), COALESCE(AVG(crypto_amount - fee), 0) FROM history WHERE date BETWEEN $1 AND $2 AND pay_method=$3 AND crypto_currency=$4 LIMIT 1;"
+
+	row := db.conn.QueryRowContext(ctx, query, from, to, payMethod, cryptoCurrency)
+
+	err := row.Scan(&result.FiatAmounts, &result.CryptoAmount, &result.CryptoAVG)
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
+}
+
+func (db *PostgresDatabase) GetInfo(ctx context.Context) (models.ResponseExchangesHistoryInfo, error) {
+	var result models.ResponseExchangesHistoryInfo
+
+	tx, err := db.conn.Begin()
+	if err != nil {
+		return result, err
+	}
+
+	rows, err := tx.QueryContext(ctx, "SELECT DISTINCT crypto_currency FROM history;")
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var cryptoCurrency string
+
+		err = rows.Scan(&cryptoCurrency)
+		if err != nil {
+			return result, err
+		}
+
+		result.CryptoCurrencies = append(result.CryptoCurrencies, cryptoCurrency)
+	}
+
+	rows, err = tx.QueryContext(ctx, "SELECT DISTINCT pay_method FROM history;")
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var payMethod string
+
+		err = rows.Scan(&payMethod)
+		if err != nil {
+			return result, err
+		}
+
+		result.PayMethods = append(result.PayMethods, payMethod)
+	}
+
+	return result, nil
+}

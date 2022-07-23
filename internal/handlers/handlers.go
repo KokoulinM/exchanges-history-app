@@ -16,6 +16,8 @@ type Repository interface {
 	Ping(ctx context.Context) error
 	UploadFile(ctx context.Context, exchangesHistory []models.ExchangesHistory) error
 	GetHistory(ctx context.Context) ([]models.ExchangesHistory, error)
+	Calculate(ctx context.Context, from, to, payMethod, cryptoCurrency string) (models.ResponseCalculation, error)
+	GetInfo(ctx context.Context) (models.ResponseExchangesHistoryInfo, error)
 }
 
 type Handlers struct {
@@ -86,6 +88,79 @@ func (h *Handlers) GetHistory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Add("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	w.WriteHeader(http.StatusOK)
+
+	_, err = w.Write(body)
+	if err == nil {
+		return
+	}
+}
+
+func (h *Handlers) CalculateHistory(w http.ResponseWriter, r *http.Request) {
+	from := r.URL.Query().Get("from")
+	if from == "" {
+		http.Error(w, "", http.StatusBadRequest)
+		return
+	}
+
+	to := r.URL.Query().Get("to")
+	if to == "" {
+		http.Error(w, "", http.StatusBadRequest)
+		return
+	}
+
+	payMethod := r.URL.Query().Get("payMethod")
+	if payMethod == "" {
+		http.Error(w, "", http.StatusBadRequest)
+		return
+	}
+
+	cryptoCurrency := r.URL.Query().Get("cryptoCurrency")
+	if cryptoCurrency == "" {
+		http.Error(w, "", http.StatusBadRequest)
+		return
+	}
+
+	calculation, err := h.repo.Calculate(r.Context(), from, to, payMethod, cryptoCurrency)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	body, err := json.Marshal(calculation)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Add("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	w.WriteHeader(http.StatusOK)
+
+	_, err = w.Write(body)
+	if err == nil {
+		return
+	}
+}
+
+func (h *Handlers) GetHistoryInfo(w http.ResponseWriter, r *http.Request) {
+	info, err := h.repo.GetInfo(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	body, err := json.Marshal(info)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Add("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	w.WriteHeader(http.StatusOK)
 

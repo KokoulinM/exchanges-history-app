@@ -3,10 +3,12 @@ package csv
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/KokoulinM/exchanges-history-app/internal/models"
 )
@@ -32,7 +34,12 @@ func parser(data [][]string, filters ...func(eh models.ExchangesHistory) bool) (
 				trimmed := strings.TrimSpace(field)
 				switch col {
 				case DateCol:
-					rec.Date = trimmed
+					t, err := time.Parse("02-01-2006 15:04:05", trimmed)
+					if err != nil {
+						fmt.Println(err)
+					}
+
+					rec.Date = t
 				case CryptoamountCol:
 					fl, err := strconv.ParseFloat(trimmed, 32)
 					if err != nil {

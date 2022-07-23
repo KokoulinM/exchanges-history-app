@@ -18,6 +18,8 @@ func New(h *handlers.Handlers) *chi.Mux {
 		r.Route("/v1", func(r chi.Router) {
 			r.Post("/history/exchanges/{file}", h.UploadHistory)
 			r.Get("/history/exchanges", h.GetHistory)
+			r.Get("/history/calculate", h.CalculateHistory)
+			r.Get("/history/info", h.GetHistoryInfo)
 			r.Get("/ping", h.PingDB)
 		})
 	})

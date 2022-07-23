@@ -4,7 +4,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS history (
     id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-    date VARCHAR NOT NULL,
+    date TIMESTAMP NOT NULL,
     crypto_amount FLOAT NOT NULL,
     fiat_amount FLOAT NOT NULL,
     fee FLOAT NOT NULL,
