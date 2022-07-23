@@ -37,7 +37,7 @@ func main() {
 
 	repo := postgres.New(db, &logger)
 
-	h := handlers.New(repo, cfg.BaseURL)
+	h := handlers.New(repo, cfg.BaseURL, &logger)
 	r := router.New(h)
 
 	s := server.New(cfg.ServerAddress, r)

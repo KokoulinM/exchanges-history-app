@@ -11,6 +11,7 @@ import (
 	"github.com/KokoulinM/exchanges-history-app/internal/csv"
 	"github.com/KokoulinM/exchanges-history-app/internal/models"
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog"
 )
 
 type Repository interface {
@@ -24,13 +25,15 @@ type Repository interface {
 type Handlers struct {
 	repo    Repository
 	baseURL string
+	logger  *zerolog.Logger
 }
 
 // New is the handlers constructor
-func New(repo Repository, baseURL string) *Handlers {
+func New(repo Repository, baseURL string, logger *zerolog.Logger) *Handlers {
 	return &Handlers{
 		repo:    repo,
 		baseURL: baseURL,
+		logger:  logger,
 	}
 }
 
@@ -39,12 +42,14 @@ func (h *Handlers) UploadHistory(w http.ResponseWriter, r *http.Request) {
 
 	fileName := chi.URLParam(r, "file")
 	if fileName == "" {
+		h.logger.Error().Msg("the parameter is missing")
 		http.Error(w, "the parameter is missing", http.StatusBadRequest)
 		return
 	}
 
 	file, _, err := r.FormFile(fileName)
 	if err != nil {
+		h.logger.Error().Msg(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -53,6 +58,7 @@ func (h *Handlers) UploadHistory(w http.ResponseWriter, r *http.Request) {
 
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, file); err != nil {
+		h.logger.Error().Msg(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -61,12 +67,14 @@ func (h *Handlers) UploadHistory(w http.ResponseWriter, r *http.Request) {
 
 	data, err := csv.Reader(reader)
 	if err != nil {
+		h.logger.Error().Msg(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	err = h.repo.UploadFile(r.Context(), data)
 	if err != nil {
+		h.logger.Error().Msg(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -103,36 +111,38 @@ func (h *Handlers) GetHistory(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) CalculateHistory(w http.ResponseWriter, r *http.Request) {
 	from := r.URL.Query().Get("from")
 	if from == "" {
-		http.Error(w, "", http.StatusBadRequest)
+		http.Error(w, "query parameter 'from' is required", http.StatusBadRequest)
 		return
 	}
 
 	to := r.URL.Query().Get("to")
 	if to == "" {
-		http.Error(w, "", http.StatusBadRequest)
+		http.Error(w, "query parameter 'to' is required", http.StatusBadRequest)
 		return
 	}
 
 	payMethod := r.URL.Query().Get("payMethod")
 	if payMethod == "" {
-		http.Error(w, "", http.StatusBadRequest)
+		http.Error(w, "query parameter 'payMethod' is required", http.StatusBadRequest)
 		return
 	}
 
 	cryptoCurrency := r.URL.Query().Get("cryptoCurrency")
 	if cryptoCurrency == "" {
-		http.Error(w, "", http.StatusBadRequest)
+		http.Error(w, "query parameter 'cryptoCurrency' is required", http.StatusBadRequest)
 		return
 	}
 
 	calculation, err := h.repo.Calculate(r.Context(), from, to, payMethod, cryptoCurrency)
 	if err != nil {
+		h.logger.Error().Msg(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	body, err := json.Marshal(calculation)
 	if err != nil {
+		h.logger.Error().Msg(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -151,12 +161,14 @@ func (h *Handlers) CalculateHistory(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) GetHistoryInfo(w http.ResponseWriter, r *http.Request) {
 	info, err := h.repo.GetInfo(r.Context())
 	if err != nil {
+		h.logger.Error().Msg(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	body, err := json.Marshal(info)
 	if err != nil {
+		h.logger.Error().Msg(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

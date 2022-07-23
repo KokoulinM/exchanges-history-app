@@ -4,7 +4,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/rs/zerolog"
 )
@@ -24,7 +23,7 @@ func New(db *sql.DB, logger *zerolog.Logger) *PostgresDatabase {
 func (db *PostgresDatabase) Ping(ctx context.Context) error {
 	err := db.conn.PingContext(ctx)
 	if err != nil {
-		fmt.Println(err)
+		db.logger.Error().Msg(err.Error())
 		return err
 	}
 	return nil
