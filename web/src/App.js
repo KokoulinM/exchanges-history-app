@@ -1,12 +1,15 @@
 import React from 'react';
 import {useEffect, useState} from 'react';
-import { Routes, Route, Link } from "react-router-dom";
-import { Layout, Menu } from 'antd';
+import { Routes, Route } from "react-router-dom";
+import { Layout } from 'antd';
 import Calculation from "./Calculation";
 import Upload from "./Upload";
+import CustomLink from "./CustomLink";
 import './App.css';
 import 'antd/dist/antd.css';
+
 import api from "./api";
+
 
 const { Header, Content, Footer } = Layout;
 
@@ -38,23 +41,10 @@ function App() {
       <Layout>
         <Header style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
           <div className="logo" />
-          <Menu
-              theme="dark"
-              mode="horizontal"
-              defaultSelectedKeys={['1']}
-              items={[{
-                key: 1,
-                label: (
-                    <Link to="/">History</Link>
-                )
-              },
-              {
-                  key: 2,
-                  label: (
-                      <Link to="upload">Upload</Link>
-                  )
-              }]}
-          />
+            <div className="nav">
+                <CustomLink to="/">History</CustomLink>
+                <CustomLink to="upload">Upload</CustomLink>
+            </div>
         </Header>
         <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64 }}>
           <div className="site-layout-background" style={{ padding: 24, height: 'calc(100vh - 135px)' }}>

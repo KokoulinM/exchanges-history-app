@@ -1,12 +1,31 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import { message, Upload as AntUpload } from 'antd';
+import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
+import { message, Upload as AntUpload, notification } from 'antd';
 import React, { useState } from 'react';
 import './Upload.css'
+import api from "./api";
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
+};
+
+const openSuccessNotification = (placement) => {
+    notification.info({
+        message: `The CSV file has been uploaded successfully`,
+        placement,
+        icon: <SmileOutlined style={{ color: '#e91010' }} />,
+    });
+};
+
+const openFailureNotification = (placement, err) => {
+    notification.info({
+        message: `An error occurred while uploading the file`,
+        description: err,
+        placement,
+        icon: <FrownOutlined style={{ color: 'E91010FF' }} />,
+    });
 };
 
 const beforeUpload = (file) => {
@@ -29,16 +48,35 @@ function Upload() {
     const [loading, setLoading] = useState(false);
     const [csvUrl, setCsvUrl] = useState();
 
+    const uploadFile = (data) => {
+        setLoading(true);
+        const bodyFormData = new FormData();
+        bodyFormData.append('file', data.file);
+
+        api.post(`/history/exchanges/${data.filename}`, bodyFormData, {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        })
+            .then(res => {
+                openSuccessNotification('bottomLeft')
+            })
+            .catch(err => {
+                openFailureNotification('bottomLeft', err)
+            })
+            .finally(() => {
+                setLoading(false);
+            })
+    }
+
     const handleChange = (info) => {
         if (info.file.status === 'uploading') {
-            setLoading(true);
             return;
         }
 
         if (info.file.status === 'done') {
             // Get this url from response in real world.
             getBase64(info.file.originFileObj, (url) => {
-                setLoading(false);
                 setCsvUrl(url);
             });
         }
@@ -60,13 +98,12 @@ function Upload() {
     return (
         <div className="upload">
             <AntUpload
-                name="avatar"
+                accept="text/csv"
+                customRequest={uploadFile}
+                onChange={handleChange}
                 listType="picture-card"
                 className="avatar-uploader"
                 showUploadList={false}
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                beforeUpload={beforeUpload}
-                onChange={handleChange}
             >
                 {csvUrl ? <img src={csvUrl} alt="avatar" /> : uploadButton}
             </AntUpload>
