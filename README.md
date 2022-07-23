@@ -45,6 +45,8 @@ golangci-lint run
 ````
 cd ./web 
 
+yarn/npm i - install npm packages
+
 dev - yarn start
 build - yarn build
 ````
