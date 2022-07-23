@@ -10,6 +10,24 @@ Start psql and open database postgres, which is the database postgres uses itsel
 ````
 psql postgres
 ````
+
+````
+CREATE SCHEMA IF NOT EXISTS exchanges_history;
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS history (
+    id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+    date TIMESTAMP NOT NULL,
+    crypto_amount FLOAT NOT NULL,
+    fiat_amount FLOAT NOT NULL,
+    fee FLOAT NOT NULL,
+    crypto_currency VARCHAR NOT NULL,
+    pay_method VARCHAR NOT NULL,
+    type VARCHAR NOT NULL,
+    status VARCHAR NOT NULL
+);
+````
 # Test
 
 ````
@@ -21,4 +39,12 @@ go test ./...
 
 ````
 golangci-lint run
+````
+
+# Frontend
+````
+cd ./web 
+
+dev - yarn start
+build - yarn build
 ````

@@ -5,17 +5,11 @@ import React, { useState } from 'react';
 import './Upload.css'
 import api from "./api";
 
-const getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-};
-
 const openSuccessNotification = (placement) => {
     notification.info({
         message: `The CSV file has been uploaded successfully`,
         placement,
-        icon: <SmileOutlined style={{ color: '#e91010' }} />,
+        icon: <SmileOutlined style={{ color: '#1890ff' }} />,
     });
 };
 
@@ -24,7 +18,7 @@ const openFailureNotification = (placement, err) => {
         message: `An error occurred while uploading the file`,
         description: err,
         placement,
-        icon: <FrownOutlined style={{ color: 'E91010FF' }} />,
+        icon: <FrownOutlined style={{ color: '#e91010' }} />,
     });
 };
 
@@ -46,7 +40,6 @@ const beforeUpload = (file) => {
 
 function Upload() {
     const [loading, setLoading] = useState(false);
-    const [csvUrl, setCsvUrl] = useState();
 
     const uploadFile = (data) => {
         setLoading(true);
@@ -58,7 +51,7 @@ function Upload() {
                 'content-type': 'multipart/form-data'
             }
         })
-            .then(res => {
+            .then(() => {
                 openSuccessNotification('bottomLeft')
             })
             .catch(err => {
@@ -68,19 +61,6 @@ function Upload() {
                 setLoading(false);
             })
     }
-
-    const handleChange = (info) => {
-        if (info.file.status === 'uploading') {
-            return;
-        }
-
-        if (info.file.status === 'done') {
-            // Get this url from response in real world.
-            getBase64(info.file.originFileObj, (url) => {
-                setCsvUrl(url);
-            });
-        }
-    };
 
     const uploadButton = (
         <div>
@@ -100,12 +80,12 @@ function Upload() {
             <AntUpload
                 accept="text/csv"
                 customRequest={uploadFile}
-                onChange={handleChange}
                 listType="picture-card"
                 className="avatar-uploader"
                 showUploadList={false}
+                beforeUpload={beforeUpload}
             >
-                {csvUrl ? <img src={csvUrl} alt="avatar" /> : uploadButton}
+                {uploadButton}
             </AntUpload>
         </div>
     )
