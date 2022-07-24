@@ -4,6 +4,7 @@ import { message, Upload as AntUpload, notification } from 'antd';
 import React, { useState } from 'react';
 import './Upload.css'
 import api from "./api";
+import { HistoryInfoContext } from "./historyInfoContext";
 
 const openSuccessNotification = (placement) => {
     notification.info({
@@ -41,6 +42,8 @@ const beforeUpload = (file) => {
 function Upload() {
     const [loading, setLoading] = useState(false);
 
+    const {getInfo} = React.useContext(HistoryInfoContext)
+
     const uploadFile = (data) => {
         setLoading(true);
         const bodyFormData = new FormData();
@@ -53,6 +56,10 @@ function Upload() {
         })
             .then(() => {
                 openSuccessNotification('bottomLeft')
+
+                getInfo().catch(err => {
+                    console.log(err)
+                })
             })
             .catch(err => {
                 openFailureNotification('bottomLeft', err)

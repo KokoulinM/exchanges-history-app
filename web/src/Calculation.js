@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import api from './api';
 import { Select, Button, Form, DatePicker, Row, Col } from 'antd';
-import { HistoryInfoContext } from "./App";
+import { HistoryInfoContext } from "./historyInfoContext";
 import "./Calculation.css"
 
 const { Option } = Select;
