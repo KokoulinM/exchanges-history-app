@@ -1,6 +1,6 @@
 import React from 'react';
 import {useEffect, useState} from 'react';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Layout } from 'antd';
 import Calculation from "./Calculation";
 import Upload from "./Upload";
@@ -40,6 +40,10 @@ function App() {
               <Routes>
                   <Route path="/" element={<Calculation />} />
                   <Route path="upload" element={<Upload />} />
+                  <Route
+                      path="*"
+                      element={<Navigate to="/" replace />}
+                  />
               </Routes>
           </div>
         </Content>
