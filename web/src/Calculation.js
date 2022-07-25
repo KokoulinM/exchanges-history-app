@@ -12,7 +12,7 @@ function Calculation() {
     const [data, setData] = useState({
         fiatAmounts: 0,
         cryptoAmount: 0,
-        cryptoAVG: 0
+        averageCost: 0
     });
     const [loading, setLoading] = useState(false);
 
@@ -126,7 +126,7 @@ function Calculation() {
                     <div>
                         <div><b>Fiat amounts:</b> {data.fiatAmounts}</div>
                         <div><b>Crypto amount:</b> {data.cryptoAmount}</div>
-                        <div><b>Crypto AVG:</b> {data.cryptoAVG}</div>
+                        <div><b>Average cost:</b> {data.averageCost}</div>
                     </div>
                 </Col>
             </Row>

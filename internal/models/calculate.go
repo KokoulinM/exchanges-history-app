@@ -6,5 +6,5 @@ type ResponseCalculation struct {
 	// сумма в BTC (за вычетом Fee)
 	CryptoAmount float64 `json:"cryptoAmount"`
 	// средняя стоимость крипты за вычетом комиссии
-	CryptoAVG float64 `json:"cryptoAVG"`
+	AverageCost float64 `json:"averageCost"`
 }

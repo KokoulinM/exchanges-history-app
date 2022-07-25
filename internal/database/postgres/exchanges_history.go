@@ -75,11 +75,11 @@ func (db *PostgresDatabase) GetHistory(ctx context.Context) ([]models.ExchangesH
 
 func (db *PostgresDatabase) Calculate(ctx context.Context, from, to, payMethod, cryptoCurrency string) (models.ResponseCalculation, error) {
 	var result models.ResponseCalculation
-	query := "SELECT COALESCE(SUM(fiat_amount), 0), COALESCE(SUM(crypto_amount - fee), 0), COALESCE(AVG(crypto_amount - fee), 0) FROM history WHERE date BETWEEN $1 AND $2 AND pay_method=$3 AND crypto_currency=$4 LIMIT 1;"
+	query := "SELECT COALESCE(SUM(fiat_amount), 0), COALESCE(SUM(crypto_amount - fee), 0), COALESCE(SUM(fiat_amount)/(SUM(crypto_amount) - SUM(fee)), 0) FROM history WHERE date BETWEEN $1 AND $2 AND pay_method=$3 AND crypto_currency=$4 LIMIT 1;"
 
 	row := db.conn.QueryRowContext(ctx, query, from, to, payMethod, cryptoCurrency)
 
-	err := row.Scan(&result.FiatAmounts, &result.CryptoAmount, &result.CryptoAVG)
+	err := row.Scan(&result.FiatAmounts, &result.CryptoAmount, &result.AverageCost)
 	if err != nil {
 		return result, err
 	}
