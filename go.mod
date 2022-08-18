@@ -1,4 +1,4 @@
-module github.com/KokoulinM/exchanges-history-app
+module github.com/mkokoulin/exchanges-history-app
 
 go 1.18
 

@@ -2,9 +2,9 @@
 package router
 
 import (
-	"github.com/KokoulinM/exchanges-history-app/internal/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/mkokoulin/exchanges-history-app/internal/handlers"
 )
 
 // New router constructor

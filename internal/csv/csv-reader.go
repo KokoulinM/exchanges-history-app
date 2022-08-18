@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/KokoulinM/exchanges-history-app/internal/models"
+	"github.com/mkokoulin/exchanges-history-app/internal/models"
 )
 
 const (

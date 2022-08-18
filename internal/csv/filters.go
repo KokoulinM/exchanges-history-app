@@ -1,6 +1,6 @@
 package csv
 
-import "github.com/KokoulinM/exchanges-history-app/internal/models"
+import "github.com/mkokoulin/exchanges-history-app/internal/models"
 
 // нужны только purchase
 func filterType(eh models.ExchangesHistory) bool {

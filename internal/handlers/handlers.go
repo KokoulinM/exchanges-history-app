@@ -8,9 +8,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/KokoulinM/exchanges-history-app/internal/csv"
-	"github.com/KokoulinM/exchanges-history-app/internal/models"
 	"github.com/go-chi/chi/v5"
+	"github.com/mkokoulin/exchanges-history-app/internal/csv"
+	"github.com/mkokoulin/exchanges-history-app/internal/models"
 	"github.com/rs/zerolog"
 )
 

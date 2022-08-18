@@ -7,11 +7,11 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"github.com/KokoulinM/exchanges-history-app/internal/config"
-	"github.com/KokoulinM/exchanges-history-app/internal/database/postgres"
-	"github.com/KokoulinM/exchanges-history-app/internal/handlers"
-	"github.com/KokoulinM/exchanges-history-app/internal/router"
-	"github.com/KokoulinM/exchanges-history-app/internal/server"
+	"github.com/mkokoulin/exchanges-history-app/internal/config"
+	"github.com/mkokoulin/exchanges-history-app/internal/database/postgres"
+	"github.com/mkokoulin/exchanges-history-app/internal/handlers"
+	"github.com/mkokoulin/exchanges-history-app/internal/router"
+	"github.com/mkokoulin/exchanges-history-app/internal/server"
 )
 
 func main() {

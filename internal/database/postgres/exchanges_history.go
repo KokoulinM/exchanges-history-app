@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/KokoulinM/exchanges-history-app/internal/models"
+	"github.com/mkokoulin/exchanges-history-app/internal/models"
 )
 
 func (db *PostgresDatabase) UploadFile(ctx context.Context, exchangesHistory []models.ExchangesHistory) error {
